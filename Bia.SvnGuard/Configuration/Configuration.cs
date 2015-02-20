@@ -11,10 +11,10 @@ namespace Bia.SvnGuard.Configuration
             _configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
         }
 
-        public string SvnUtilitiesPath
+        public string SvnLookPath
         {
-            get { return Get("SvnUtilitiesPath"); }
-            set { Set("SvnUtilitiesPath", value); }
+            get { return Get("SvnLookPath"); }
+            set { Set("SvnLookPath", value); }
         }
 
         public string StylecopPath
@@ -27,6 +27,24 @@ namespace Bia.SvnGuard.Configuration
         {
             get { return Get("RepositoriesPath"); }
             set { Set("RepositoriesPath", value); }
+        }
+
+        public string StylecopWrapper
+        {
+            get { return Get("StylecopWrapper"); }
+            set { Set("StylecopWrapper", value); }
+        }
+
+        public string StylecopSettings
+        {
+            get { return Get("StylecopSettings"); }
+            set { Set("StylecopSettings", value); }
+        }
+
+        public string TempFolder
+        {
+            get { return Get("TempFolder"); }
+            set { Set("TempFolder", value); }
         }
 
         public RepositoriesConfigurationSection RepositoriesConfig

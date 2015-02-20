@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
 using Bia.SvnGuard.Configuration;
 using Bia.SvnGuard.Properties;
@@ -27,7 +26,7 @@ namespace Bia.SvnGuard.ViewModels
         {
             _configuration = configuration;
             _fileSystem = fileSystem;
-            _svnUtilitiesPath = _configuration.SvnUtilitiesPath;
+            _svnUtilitiesPath = _configuration.SvnLookPath;
             _stylecopPath = _configuration.StylecopPath;
             _repositoriesPath = _configuration.RepositoriesPath;
             _repositories = _configuration.RepositoriesConfig.Repositories.Cast<RepositoryConfigurationElement>();
@@ -39,7 +38,7 @@ namespace Bia.SvnGuard.ViewModels
             set
             {
                 _svnUtilitiesPath = value;
-                _configuration.SvnUtilitiesPath = _svnUtilitiesPath;
+                _configuration.SvnLookPath = _svnUtilitiesPath;
                 OnPropertyChanged();
             }
         }
@@ -124,7 +123,14 @@ namespace Bia.SvnGuard.ViewModels
             {
                 var preCommitHookScript = Path.Combine(RepositoriesPath, repositoryConfigurationElement.Name, "hooks",
                     "pre-commit.cmd");
-                File.WriteAllText(preCommitHookScript, "echo Processing your commit");
+                var hookBody = string.Format(
+                    BatTemplates.PreCommit,
+                    _configuration.SvnLookPath,
+                    _configuration.StylecopWrapper,
+                    _configuration.StylecopPath,
+                    _configuration.StylecopSettings,
+                    _configuration.TempFolder);
+                File.WriteAllText(preCommitHookScript, hookBody);
             }
         }
 

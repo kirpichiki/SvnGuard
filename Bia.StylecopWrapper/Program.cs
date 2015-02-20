@@ -1,142 +1,114 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using CommandLine;
-using CommandLine.Text;
 
 namespace Bia.StylecopWrapper
 {
     class Program
     {
-        static void Main(string[] args)
+        static readonly List<string> Violations = new List<string>();
+ 
+        static int Main(string[] args)
         {
             var options = new Options();
             if (Parser.Default.ParseArguments(args, options))
             {
-                var localSourceFiles = new List<string>();
-                string tempFolder = @"D:\Dropbox\Projects\Windows\Bia.SvnGuard\Bia.SvnGuard\bin\Debug\Temp";
-                SaveCommittedFilesToTemp(tempFolder, localSourceFiles, options.Repository, options.Revision);
-                ValidateFiles(options, tempFolder);
+                DeleteTempFolder(options);
+                
+                var svnLook = new SvnLook(options.SvnLookPath);
+                if (!CheckComment(svnLook, options))
+                {
+                    Console.Error.WriteLine("Please put a comment that describes changes you made in the code");
+                    return (int) ReturnCode.EmptyComment;
+                }
+
+                SaveCommittedFilesToTemp(svnLook, options);
+                ValidateFiles(options, options.TempFolder);
+
+                if (Violations.Count > 0)
+                {
+                    Console.Error.WriteLine("There are StyleCop violations in your code");
+                    foreach (var violation in Violations)
+                    {
+                        Console.Error.WriteLine(violation);
+                    }
+
+                    return (int) ReturnCode.ViolationsFound;
+                }
+
+                return (int) ReturnCode.Ok;
             }
 
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadKey();
+            Console.Error.WriteLine(options.LastParserState.Errors.First().BadOption.LongName);
+            return (int) ReturnCode.WrongParameters;
         }
 
         public static void OnViolationEncountered(object sender, object violationEventArgs)
         {
-            Console.WriteLine(violationEventArgs.GetType().GetProperty("Message").GetValue(violationEventArgs));
+            var violation = violationEventArgs.GetValue("Violation");
+            var violationDescription = String.Format(
+                "{0}: {1} in {3}:{2}", 
+                violation.GetValue("Rule.CheckId"), 
+                violation.GetValue("Message"), 
+                violation.GetValue("Line"), 
+                violation.GetValue("SourceCode.Name"));
+            Violations.Add(violationDescription);
         }
 
         private static void ValidateFiles(Options options, string path)
         {
-            var asm = Assembly.LoadFile(Path.Combine(options.StylecopPath, "StyleCop.dll"));
-            var styleCopConsoleType = asm.GetType("StyleCop.StyleCopConsole");
-            var styleCopConsole = Activator.CreateInstance(styleCopConsoleType, null, false, null, null, true);
+            var asm = Assembly.LoadFile(Path.Combine(options.StylecopPath, "StyleCop.dll"));;
+            var styleCopConsole = asm.CreateInstance("StyleCop.StyleCopConsole", options.StylecopSettingsPath, false, null, null, true);
+            var configuration = asm.CreateInstance("StyleCop.Configuration", new object[] {null});
+            var codeProject = asm.CreateInstance("StyleCop.CodeProject", 0, path, configuration);
 
-            var codeProjectType = asm.GetType("StyleCop.CodeProject");
-            var configurationType = asm.GetType("StyleCop.Configuration");
-            var configuration = Activator.CreateInstance(configurationType, new object[] {null});
-            var codeProject = Activator.CreateInstance(codeProjectType, 0, path, configuration);
-                
-            var files = Directory.GetFiles(path, "*.cs", SearchOption.AllDirectories);
-            foreach (var file in files)
+            string[] files;
+            try
             {
-                var core = styleCopConsole.GetType().GetProperty("Core").GetValue(styleCopConsole);
-                var environment = core.GetType().GetProperty("Environment").GetValue(core);
-                environment.GetType().GetMethod("AddSourceCode").Invoke(environment, new[] { codeProject, file, null });
+                files = Directory.GetFiles(path, "*.cs", SearchOption.AllDirectories);
             }
-
-            var projects = CreateList(codeProjectType, new [] { codeProject });
-            var eventInfo = styleCopConsole.GetType().GetEvent("ViolationEncountered");
-            eventInfo.AddEventHandler(styleCopConsole, Delegate.CreateDelegate(eventInfo.EventHandlerType, typeof(Program).GetMethod("OnViolationEncountered")));
-
-            styleCopConsole.GetType().GetMethod("Start").Invoke(styleCopConsole, new object[] { projects, true });
-        }
-
-        private static void SaveCommittedFilesToTemp(string tempFolder, List<string> localSourceFiles , string repositoryPath, int revision)
-        {
-            ProcessStartInfo svnLookPsi = new ProcessStartInfo(@"C:\Program Files\TortoiseSVN\bin\svnlook.exe");
-            svnLookPsi.UseShellExecute = svnLookPsi.ErrorDialog = false;
-            svnLookPsi.RedirectStandardOutput = true;
-            Process svnLookProcess = new Process();
-            svnLookProcess.StartInfo = svnLookPsi;
-
-
-            svnLookPsi.Arguments = String.Format("log --revision {0} \"{1}\"", revision, repositoryPath);
-            svnLookProcess.Start();
-            string comment = svnLookProcess.StandardOutput.ReadToEnd();
-            if (String.IsNullOrWhiteSpace(comment))
+            catch
             {
                 return;
             }
-
-            svnLookPsi.Arguments = string.Format("changed \"{0}\" {1}", repositoryPath, string.Format("-r {0}", revision));
-
-            svnLookProcess.Start();
-
-            string[] committedFiles = svnLookProcess.StandardOutput.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            Regex fileNameExtractor = new Regex("^[AU] *(.*)");
             
-            foreach (string committedRow in committedFiles)
+            foreach (var file in files)
             {
-                string committedFile = fileNameExtractor.Match(committedRow).Groups[1].Value;
-                if (true) // need to analyze file
-                {
-                    string outFileName = Path.Combine(tempFolder, committedFile.Replace("/", "\\"));
-                    Directory.CreateDirectory(Path.GetDirectoryName(outFileName));
+                styleCopConsole.GetValue("Core.Environment").InvokeMethod("AddSourceCode", codeProject, file, null);
+            }
 
-                    svnLookPsi.Arguments = string.Format("cat \"{0}\" \"{1}\" {2}", repositoryPath, committedFile, string.Format("-r {0}", revision));
+            var projects = asm.GetType("StyleCop.CodeProject").CreateList(codeProject);
+            styleCopConsole.AddEventHandler("ViolationEncountered", typeof(Program).GetMethod("OnViolationEncountered"));
+            
+            styleCopConsole.InvokeMethod("Start", projects, true);
+        }
 
-                    svnLookProcess.Start();
-
-                    StreamWriter outFile = new StreamWriter(outFileName, false, Encoding.UTF8);
-                    outFile.Write(svnLookProcess.StandardOutput.ReadToEnd());
-                    outFile.Close();
-
-                    localSourceFiles.Add(outFileName);
-                }
+        private static void SaveCommittedFilesToTemp(SvnLook svnLook, Options options)
+        {
+            var files = svnLook.GetChangedFiles(options.Repository, options.Transaction);
+            foreach (string file in files)
+            {
+                string outFileName = Path.Combine(options.TempFolder, file);
+                Directory.CreateDirectory(Path.GetDirectoryName(outFileName));
+                svnLook.DownloadFile(options.Repository, options.Transaction, file, outFileName);
             }
         }
 
-        static IList CreateList(Type type, object[] objects)
+        private static bool CheckComment(SvnLook svnLook, Options options)
         {
-            var genericListType = typeof(List<>);
-            var specificListType = genericListType.MakeGenericType(type);
-            var list = (IList)Activator.CreateInstance(specificListType);
-            foreach (var o in objects)
-            {
-                list.Add(Convert.ChangeType(o, type));
-            }
-            return list;
+            var comment = svnLook.GetCommitComment(options.Repository, options.Transaction);
+            return !String.IsNullOrWhiteSpace(comment) || options.AllowEmptyComment;
         }
-    }
 
-
-
-    class Options
-    {
-        [Option('s', "stylecop", HelpText="Path to StyleCop Dlls", Required = true)]
-        public string StylecopPath { get; set; }
-
-        [Option('r', "repository", HelpText = "Repository which recieves commited files", Required = true)]
-        public string Repository { get; set; }
-
-        [Option('v', "revision", HelpText = "Revision number with files to analyze", Required = true)]
-        public int Revision { get; set; }
-
-        [Option('e', "allow-empty-comment", HelpText = "If you need to ignore empty comments", Required = false)]
-        public bool AllowEmptyComment { get; set; }
-
-        [HelpOption]
-        public string GetUsage()
+        private static void DeleteTempFolder(Options options)
         {
-            return HelpText.AutoBuild(this, current => HelpText.DefaultParsingErrorsHandler(this, current));
+            if (Directory.Exists(options.TempFolder))
+            {
+                Directory.Delete(options.TempFolder, true);
+            }
         }
     }
 }

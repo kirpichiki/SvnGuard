@@ -9,18 +9,33 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bia.StylecopWrapper", "Bia.
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		CD_ROM|Any CPU = CD_ROM|Any CPU
 		Debug|Any CPU = Debug|Any CPU
+		DVD-5|Any CPU = DVD-5|Any CPU
 		Release|Any CPU = Release|Any CPU
+		SingleImage|Any CPU = SingleImage|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FFF29528-C321-4B59-ABC4-7A4C09E2EE39}.CD_ROM|Any CPU.ActiveCfg = Release|Any CPU
+		{FFF29528-C321-4B59-ABC4-7A4C09E2EE39}.CD_ROM|Any CPU.Build.0 = Release|Any CPU
 		{FFF29528-C321-4B59-ABC4-7A4C09E2EE39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FFF29528-C321-4B59-ABC4-7A4C09E2EE39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFF29528-C321-4B59-ABC4-7A4C09E2EE39}.DVD-5|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFF29528-C321-4B59-ABC4-7A4C09E2EE39}.DVD-5|Any CPU.Build.0 = Debug|Any CPU
 		{FFF29528-C321-4B59-ABC4-7A4C09E2EE39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFF29528-C321-4B59-ABC4-7A4C09E2EE39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFF29528-C321-4B59-ABC4-7A4C09E2EE39}.SingleImage|Any CPU.ActiveCfg = Release|Any CPU
+		{FFF29528-C321-4B59-ABC4-7A4C09E2EE39}.SingleImage|Any CPU.Build.0 = Release|Any CPU
+		{B82A357F-3CA6-4572-A86C-C689E7399E8C}.CD_ROM|Any CPU.ActiveCfg = Release|Any CPU
+		{B82A357F-3CA6-4572-A86C-C689E7399E8C}.CD_ROM|Any CPU.Build.0 = Release|Any CPU
 		{B82A357F-3CA6-4572-A86C-C689E7399E8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B82A357F-3CA6-4572-A86C-C689E7399E8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B82A357F-3CA6-4572-A86C-C689E7399E8C}.DVD-5|Any CPU.ActiveCfg = Debug|Any CPU
+		{B82A357F-3CA6-4572-A86C-C689E7399E8C}.DVD-5|Any CPU.Build.0 = Debug|Any CPU
 		{B82A357F-3CA6-4572-A86C-C689E7399E8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B82A357F-3CA6-4572-A86C-C689E7399E8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B82A357F-3CA6-4572-A86C-C689E7399E8C}.SingleImage|Any CPU.ActiveCfg = Release|Any CPU
+		{B82A357F-3CA6-4572-A86C-C689E7399E8C}.SingleImage|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

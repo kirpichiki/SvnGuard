@@ -58,10 +58,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BatTemplates.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BatTemplates.resx</DependentUpon>
+    </Compile>
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\RepositoriesConfigurationElementCollection.cs" />
     <Compile Include="Configuration\RepositoriesConfigurationSection.cs" />
     <Compile Include="Configuration\RepositoryConfigurationElement.cs" />
+    <Compile Include="Services\HookService.cs" />
     <Compile Include="ViewModels\DelegateCommand.cs" />
     <Compile Include="Services\FileSystemService.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
@@ -94,6 +100,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="BatTemplates.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>BatTemplates.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -107,6 +118,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PreCommit.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

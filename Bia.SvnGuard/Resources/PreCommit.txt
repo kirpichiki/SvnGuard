@@ -1,0 +1,17 @@
+@echo off
+SET SVN_LOOK="{0}"
+SET STYLECOP_WRAPPER="{1}"
+SET STYLECOP_DLLS="{2}"
+SET STYLECOP_SETTINGS="{3}"
+SET TEMP_FOLDER="{4}"
+
+@echo on
+:: %1 - Repository's path
+:: %2 - Commit transaction number
+:: http://svnbook.red-bean.com/nightly/en/svn.ref.reposhooks.pre-commit.html
+%STYLECOP_WRAPPER% -s %STYLECOP_DLLS% -l %SVN_LOOK% -t %TEMP_FOLDER% -p %STYLECOP_SETTINGS% -r %1 -v %2
+IF %ERRORLEVEL% EQU 0 GOTO OK
+EXIT %ERRORLEVEL%
+
+:OK
+EXIT 0
