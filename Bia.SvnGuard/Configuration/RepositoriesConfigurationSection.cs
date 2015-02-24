@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System.ComponentModel;
+using System.Configuration;
 
 namespace Bia.SvnGuard.Configuration
 {

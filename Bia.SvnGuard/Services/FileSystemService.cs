@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Bia.SvnGuard.Services
@@ -31,7 +32,7 @@ namespace Bia.SvnGuard.Services
 
         public string[] ListFolders(string path)
         {
-            return Directory.GetDirectories(path);
+            return Directory.GetDirectories(path).Select(p => p.Remove(0, path.Length).Trim('\\')).ToArray();
         }
     }
 }

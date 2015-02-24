@@ -59,6 +59,19 @@ namespace Bia.SvnGuard.Configuration
             get { return _configuration.GetSection("repositoriesConfiguration") as RepositoriesConfigurationSection; }
         }
 
+        public void AddRepository(RepositoryConfigurationElement repository)
+        {
+            RepositoriesConfig.Repositories.Add(repository);
+            SaveConfiguration("repositoriesConfiguration");
+        }
+
+        private void SaveConfiguration(string sectionName)
+        {
+            _configuration.Save(ConfigurationSaveMode.Modified);
+            ConfigurationManager.RefreshSection(sectionName);
+            Properties.Settings.Default.Reload();
+        }
+
         private string Get(string setting)
         {
             return _configuration.AppSettings.Settings[setting].Value;
@@ -67,9 +80,7 @@ namespace Bia.SvnGuard.Configuration
         private void Set(string setting, string value)
         {
             _configuration.AppSettings.Settings[setting].Value = value;
-            _configuration.Save(ConfigurationSaveMode.Modified);
-            ConfigurationManager.RefreshSection("appSettings");
-            Properties.Settings.Default.Reload();
+            SaveConfiguration("appSettings");
         }
     }
 }

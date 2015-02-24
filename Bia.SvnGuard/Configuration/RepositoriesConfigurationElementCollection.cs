@@ -9,6 +9,11 @@ namespace Bia.SvnGuard.Configuration
             get { return ConfigurationElementCollectionType.AddRemoveClearMap; }
         }
 
+        public void Add(RepositoryConfigurationElement element)
+        {
+            BaseAdd(element);
+        }
+
         protected override ConfigurationElement CreateNewElement()
         {
             return new RepositoryConfigurationElement();

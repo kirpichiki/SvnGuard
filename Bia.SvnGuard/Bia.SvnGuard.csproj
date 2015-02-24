@@ -67,9 +67,11 @@
     <Compile Include="Configuration\RepositoriesConfigurationElementCollection.cs" />
     <Compile Include="Configuration\RepositoriesConfigurationSection.cs" />
     <Compile Include="Configuration\RepositoryConfigurationElement.cs" />
+    <Compile Include="Entities\Repository.cs" />
     <Compile Include="Services\HookService.cs" />
     <Compile Include="ViewModels\DelegateCommand.cs" />
     <Compile Include="Services\FileSystemService.cs" />
+    <Compile Include="ViewModels\RepositoryViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
 using Bia.SvnGuard.Configuration;
 using Bia.SvnGuard.Properties;
 using Bia.SvnGuard.Services;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Bia.SvnGuard.ViewModels
 {
@@ -19,12 +22,13 @@ namespace Bia.SvnGuard.ViewModels
         private string _stylecopPath;
         private string _repositoriesPath;
         private string _stylecopSettings;
+        private string _selectedRepository;
         private DelegateCommand _selectSvnUtilitiesPathCommand;
         private DelegateCommand _selectStylecopPathCommand;
         private DelegateCommand _selectRepositoriesPathCommand;
         private DelegateCommand _applyCommand;
         private DelegateCommand _selectStylecopSettingsCommand;
-        private readonly IEnumerable<RepositoryConfigurationElement> _repositories;
+        private DelegateCommand _addRepositoryCommand;
 
         public MainWindowViewModel(Configuration.Configuration configuration, FileSystemService fileSystem)
         {
@@ -41,7 +45,8 @@ namespace Bia.SvnGuard.ViewModels
             _svnUtilitiesPath = _configuration.SvnLookPath;
             _stylecopPath = _configuration.StylecopPath;
             _repositoriesPath = _configuration.RepositoriesPath;
-            _repositories = _configuration.RepositoriesConfig.Repositories.Cast<RepositoryConfigurationElement>();
+            Repositories = new ObservableCollection<RepositoryViewModel>(_configuration.RepositoriesConfig.Repositories.Cast<RepositoryConfigurationElement>().Select(e => new RepositoryViewModel(e)));
+            AvailableRepositories = new ObservableCollection<string>(_fileSystem.ListFolders(_configuration.RepositoriesPath).Except(Repositories.Select(r => r.Name)));
             _stylecopSettings = _configuration.StylecopSettings;
         }
 
@@ -85,6 +90,16 @@ namespace Bia.SvnGuard.ViewModels
             {
                 _stylecopSettings = value;
                 _configuration.StylecopSettings = _stylecopSettings;
+                OnPropertyChanged();
+            }
+        }
+
+        public string SelectedRepository
+        {
+            get { return _selectedRepository; }
+            set
+            {
+                _selectedRepository = value;
                 OnPropertyChanged();
             }
         }
@@ -154,27 +169,67 @@ namespace Bia.SvnGuard.ViewModels
             }
         }
 
-        private void Apply()
+        public ICommand AddRepositoryCommand
         {
-            foreach (var repositoryConfigurationElement in _repositories)
+            get
             {
-                var preCommitHookScript = Path.Combine(RepositoriesPath, repositoryConfigurationElement.Name, "hooks",
-                    "pre-commit.cmd");
-                var hookBody = string.Format(
-                    BatTemplates.PreCommit,
-                    _configuration.SvnLookPath,
-                    _configuration.StylecopWrapper,
-                    _configuration.StylecopPath,
-                    _configuration.StylecopSettings,
-                    _configuration.TempFolder);
-                File.WriteAllText(preCommitHookScript, hookBody);
+                if (_addRepositoryCommand == null)
+                {
+                    _addRepositoryCommand = new DelegateCommand(AddRepository);
+                }
+
+                return _addRepositoryCommand;
             }
         }
 
-        public IEnumerable<RepositoryConfigurationElement> Repositories
+        private void AddRepository()
         {
-            get { return _repositories; }
+            var configurationElement = new RepositoryConfigurationElement()
+            {
+                Name = SelectedRepository,
+                Enabled = true
+            };
+
+            Repositories.Add(new RepositoryViewModel(configurationElement));
+            AvailableRepositories.Remove(SelectedRepository);
+
+            _configuration.AddRepository(configurationElement);
         }
+
+        private void Apply()
+        {
+            int updated = 0;
+            int deleted = 0;
+
+            foreach (var repository in Repositories)
+            {
+                var preCommitHookScript = Path.Combine(RepositoriesPath, repository.Name, "hooks",
+                    "pre-commit.cmd");
+                if (repository.Enabled)
+                {
+                    var hookBody = string.Format(
+                        BatTemplates.PreCommit,
+                        _configuration.SvnLookPath,
+                        _configuration.StylecopWrapper,
+                        _configuration.StylecopPath,
+                        _configuration.StylecopSettings,
+                        _configuration.TempFolder);
+                    File.WriteAllText(preCommitHookScript, hookBody);
+                    updated++;
+                }
+                else
+                {
+                    File.Delete(preCommitHookScript);
+                    deleted++;
+                }
+            }
+
+            MessageBox.Show(String.Format("{0} updated, {1} deleted.", updated, deleted), "Done!", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        public ObservableCollection<RepositoryViewModel> Repositories { get; set; }
+
+        public ObservableCollection<string> AvailableRepositories { get; set; }
 
         private void SelectSvnUtilitiesPath()
         {

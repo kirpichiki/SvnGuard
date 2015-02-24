@@ -25,18 +25,20 @@
         </DockPanel>
         <GroupBox Header="Repositories configuration">
             <StackPanel>
-                <DockPanel>
-                    <Button HorizontalAlignment="Right">Add</Button>
-                </DockPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <ComboBox Margin="0,0,10,0" Width="200" ItemsSource="{Binding AvailableRepositories}" IsEnabled="{Binding Path=AvailableRepositories.Count}" SelectedIndex="0" SelectedItem="{Binding SelectedRepository}">
+                    </ComboBox>
+                    <Button IsEnabled="{Binding AvailableRepositories.Count}" Command="{Binding AddRepositoryCommand}">Add</Button>
+                </StackPanel>
                 <ListView BorderThickness="0" ItemsSource="{Binding Repositories}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Name}"></TextBlock>
+                            <CheckBox IsChecked="{Binding Enabled}" Content="{Binding Name}"></CheckBox>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
             </StackPanel>
         </GroupBox>
-        <Button Command="{Binding ApplyCommand}">Apply</Button>
+        <Button Command="{Binding ApplyCommand}">Apply changes</Button>
     </StackPanel>
 </Window>

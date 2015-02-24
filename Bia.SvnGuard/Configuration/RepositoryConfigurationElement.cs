@@ -10,5 +10,17 @@ namespace Bia.SvnGuard.Configuration
             get { return (string) this["name"]; }
             set { this["name"] = value; }
         }
+
+        [ConfigurationProperty("enabled", IsRequired = true)]
+        public bool Enabled
+        {
+            get { return (bool) this["enabled"]; }
+            set { this["enabled"] = value; }
+        }
+
+        public void SaveChanges()
+        {
+            CurrentConfiguration.Save(ConfigurationSaveMode.Modified);
+        }
     }
 }
