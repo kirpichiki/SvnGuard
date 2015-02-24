@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bia.SvnGuard", "Bia.SvnGuar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bia.StylecopWrapper", "Bia.StylecopWrapper\Bia.StylecopWrapper.csproj", "{B82A357F-3CA6-4572-A86C-C689E7399E8C}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{3344B600-29F9-4246-8EE6-B1A89D2F0F1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CD_ROM|Any CPU = CD_ROM|Any CPU
@@ -36,6 +38,11 @@ Global
 		{B82A357F-3CA6-4572-A86C-C689E7399E8C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B82A357F-3CA6-4572-A86C-C689E7399E8C}.SingleImage|Any CPU.ActiveCfg = Release|Any CPU
 		{B82A357F-3CA6-4572-A86C-C689E7399E8C}.SingleImage|Any CPU.Build.0 = Release|Any CPU
+		{3344B600-29F9-4246-8EE6-B1A89D2F0F1B}.CD_ROM|Any CPU.ActiveCfg = Release
+		{3344B600-29F9-4246-8EE6-B1A89D2F0F1B}.Debug|Any CPU.ActiveCfg = Debug
+		{3344B600-29F9-4246-8EE6-B1A89D2F0F1B}.DVD-5|Any CPU.ActiveCfg = Debug
+		{3344B600-29F9-4246-8EE6-B1A89D2F0F1B}.Release|Any CPU.ActiveCfg = Release
+		{3344B600-29F9-4246-8EE6-B1A89D2F0F1B}.SingleImage|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

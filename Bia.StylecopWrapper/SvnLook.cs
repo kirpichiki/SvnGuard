@@ -47,6 +47,11 @@ namespace Bia.StylecopWrapper
         // http://svnbook.red-bean.com/en/1.7/svn.ref.svnlook.c.cat.html
         public void DownloadFile(string repositoryPath, string transaction, string sourceFile, string destinationFile)
         {
+            if (!destinationFile.EndsWith(".cs"))
+            {
+                return;
+            }
+
             _svnLookPsi.Arguments = string.Format("cat \"{0}\" \"{1}\" {2}", repositoryPath, sourceFile, string.Format("-t {0}", transaction));
             _svnLookProcess.Start();
             var outFile = new StreamWriter(destinationFile, false, Encoding.UTF8);

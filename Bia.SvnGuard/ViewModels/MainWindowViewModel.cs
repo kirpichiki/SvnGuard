@@ -16,10 +16,12 @@ namespace Bia.SvnGuard.ViewModels
         private string _svnUtilitiesPath;
         private string _stylecopPath;
         private string _repositoriesPath;
+        private string _stylecopSettings;
         private DelegateCommand _selectSvnUtilitiesPathCommand;
         private DelegateCommand _selectStylecopPathCommand;
         private DelegateCommand _selectRepositoriesPathCommand;
         private DelegateCommand _applyCommand;
+        private DelegateCommand _selectStylecopSettingsCommand;
         private readonly IEnumerable<RepositoryConfigurationElement> _repositories;
 
         public MainWindowViewModel(Configuration.Configuration configuration, FileSystemService fileSystem)
@@ -30,6 +32,7 @@ namespace Bia.SvnGuard.ViewModels
             _stylecopPath = _configuration.StylecopPath;
             _repositoriesPath = _configuration.RepositoriesPath;
             _repositories = _configuration.RepositoriesConfig.Repositories.Cast<RepositoryConfigurationElement>();
+            _stylecopSettings = _configuration.StylecopSettings;
         }
 
         public string SvnUtilitiesPath
@@ -61,6 +64,17 @@ namespace Bia.SvnGuard.ViewModels
             {
                 _repositoriesPath = value;
                 _configuration.RepositoriesPath = _repositoriesPath;
+                OnPropertyChanged();
+            }
+        }
+
+        public string StylecopSettings
+        {
+            get { return _stylecopSettings; }
+            set
+            {
+                _stylecopSettings = value;
+                _configuration.StylecopSettings = _stylecopSettings;
                 OnPropertyChanged();
             }
         }
@@ -101,6 +115,19 @@ namespace Bia.SvnGuard.ViewModels
                 }
 
                 return _selectRepositoriesPathCommand;
+            }
+        }
+
+        public ICommand SelectStylecopSettingsCommand
+        {
+            get
+            {
+                if (_selectStylecopSettingsCommand == null)
+                {
+                    _selectStylecopSettingsCommand = new DelegateCommand(SelectStylecopSettings);
+                }
+
+                return _selectStylecopSettingsCommand;
             }
         }
 
@@ -163,6 +190,15 @@ namespace Bia.SvnGuard.ViewModels
             if (path != null)
             {
                 RepositoriesPath = path;
+            }
+        }
+
+        private void SelectStylecopSettings()
+        {
+            var path = _fileSystem.SelectFile();
+            if (path != null)
+            {
+                StylecopSettings = path;
             }
         }
     }

@@ -50,17 +50,17 @@ namespace Bia.StylecopWrapper
         {
             var violation = violationEventArgs.GetValue("Violation");
             var violationDescription = String.Format(
-                "{0}: {1} in {3}:{2}", 
-                violation.GetValue("Rule.CheckId"), 
-                violation.GetValue("Message"), 
-                violation.GetValue("Line"), 
+                "{0}: {1} in {3}:{2}",
+                violation.GetValue("Rule.CheckId"),
+                violation.GetValue("Message"),
+                violation.GetValue("Line"),
                 violation.GetValue("SourceCode.Name"));
             Violations.Add(violationDescription);
         }
 
         private static void ValidateFiles(Options options, string path)
         {
-            var asm = Assembly.LoadFile(Path.Combine(options.StylecopPath, "StyleCop.dll"));;
+            var asm = Assembly.LoadFile(Path.Combine(options.StylecopPath, "StyleCop.dll"));
             var styleCopConsole = asm.CreateInstance("StyleCop.StyleCopConsole", options.StylecopSettingsPath, false, null, null, true);
             var configuration = asm.CreateInstance("StyleCop.Configuration", new object[] {null});
             var codeProject = asm.CreateInstance("StyleCop.CodeProject", 0, path, configuration);
@@ -82,7 +82,6 @@ namespace Bia.StylecopWrapper
 
             var projects = asm.GetType("StyleCop.CodeProject").CreateList(codeProject);
             styleCopConsole.AddEventHandler("ViolationEncountered", typeof(Program).GetMethod("OnViolationEncountered"));
-            
             styleCopConsole.InvokeMethod("Start", projects, true);
         }
 

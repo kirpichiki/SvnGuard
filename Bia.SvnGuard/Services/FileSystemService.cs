@@ -17,6 +17,18 @@ namespace Bia.SvnGuard.Services
             return null;
         }
 
+        public string SelectFile()
+        {
+            var dialog = new OpenFileDialog();
+            var result = dialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                return dialog.FileName;
+            }
+
+            return null;
+        }
+
         public string[] ListFolders(string path)
         {
             return Directory.GetDirectories(path);

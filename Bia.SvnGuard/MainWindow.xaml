@@ -18,14 +18,24 @@
             <TextBox DockPanel.Dock="Left" Width="360" Text="{Binding RepositoriesPath}"></TextBox>
             <Button DockPanel.Dock="Right" Command="{Binding SelectRepositoriesPathCommand}">Browse...</Button>
         </DockPanel>
+        <DockPanel Height="30">
+            <Label Width="105">StyleCop settings</Label>
+            <TextBox DockPanel.Dock="Left" Width="360" Text="{Binding StylecopSettings}"></TextBox>
+            <Button DockPanel.Dock="Right" Command="{Binding SelectStylecopSettingsCommand}">Browse...</Button>
+        </DockPanel>
         <GroupBox Header="Repositories configuration">
-            <ListView BorderThickness="0" ItemsSource="{Binding Repositories}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Name}"></TextBlock>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+            <StackPanel>
+                <DockPanel>
+                    <Button HorizontalAlignment="Right">Add</Button>
+                </DockPanel>
+                <ListView BorderThickness="0" ItemsSource="{Binding Repositories}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"></TextBlock>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
         </GroupBox>
         <Button Command="{Binding ApplyCommand}">Apply</Button>
     </StackPanel>
