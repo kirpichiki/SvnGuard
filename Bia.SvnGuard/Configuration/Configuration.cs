@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 
 namespace Bia.SvnGuard.Configuration
 {
@@ -45,6 +46,12 @@ namespace Bia.SvnGuard.Configuration
         {
             get { return Get("TempFolder"); }
             set { Set("TempFolder", value); }
+        }
+
+        public bool FirstRun
+        {
+            get { return Convert.ToBoolean(Get("FirstRun")); }
+            set { Set("FirstRun", value.ToString()); }
         }
 
         public RepositoriesConfigurationSection RepositoriesConfig

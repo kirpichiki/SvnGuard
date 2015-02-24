@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Input;
 using Bia.SvnGuard.Configuration;
 using Bia.SvnGuard.Properties;
@@ -27,6 +29,14 @@ namespace Bia.SvnGuard.ViewModels
         public MainWindowViewModel(Configuration.Configuration configuration, FileSystemService fileSystem)
         {
             _configuration = configuration;
+            if (_configuration.FirstRun)
+            {
+                var currentPath = AppDomain.CurrentDomain.BaseDirectory;
+                _configuration.StylecopWrapper = Path.Combine(currentPath, "Bia.StylecopWrapper.exe");
+                _configuration.TempFolder = Path.Combine(currentPath, "Temp");
+                _configuration.FirstRun = false;
+            }
+
             _fileSystem = fileSystem;
             _svnUtilitiesPath = _configuration.SvnLookPath;
             _stylecopPath = _configuration.StylecopPath;
