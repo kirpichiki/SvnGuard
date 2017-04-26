@@ -26,6 +26,9 @@ namespace Bia.StylecopWrapper
         [Option('p', "settings", HelpText = "StyleCop settings file", Required = true)]
         public string StylecopSettingsPath { get; set; }
 
+        [Option('f', "target-framework", HelpText = ".NET Framework version of code in SVN repository", DefaultValue = 4.5)]
+        public double TargetFrameworkVersion { get; set; }
+
         [ParserState]
         public IParserState LastParserState
         {

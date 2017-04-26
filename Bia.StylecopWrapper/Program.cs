@@ -17,7 +17,7 @@ namespace Bia.StylecopWrapper
             if (Parser.Default.ParseArguments(args, options))
             {
                 DeleteTempFolder(options);
-                
+
                 var svnLook = new SvnLook(options.SvnLookPath);
                 if (!CheckComment(svnLook, options))
                 {
@@ -63,7 +63,7 @@ namespace Bia.StylecopWrapper
             var asm = Assembly.LoadFile(Path.Combine(options.StylecopPath, "StyleCop.dll"));
             var styleCopConsole = asm.CreateInstance("StyleCop.StyleCopConsole", options.StylecopSettingsPath, false, null, null, true);
             var configuration = asm.CreateInstance("StyleCop.Configuration", new object[] {null});
-            var codeProject = asm.CreateInstance("StyleCop.CodeProject", 0, path, configuration);
+            var codeProject = asm.CreateInstance("StyleCop.CodeProject", 0, path, configuration, options.TargetFrameworkVersion);
 
             string[] files;
             try
